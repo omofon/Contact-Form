@@ -74,4 +74,10 @@
     @apply hover:border-green-600 focus-within:border-green-600
     @apply has-checked:bg-green-200 has-checked:border-green-600;
   }
+
+  .query-radio {
+    @apply h-4 w-4 text-green-600 border-grey-500;
+    @apply transition-all duration-150 focus:ring-green-600;
+    @apply checked:bg-green-600 checked:border-green-600;
+  }
 }

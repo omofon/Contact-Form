@@ -144,7 +144,7 @@
               rows="5"
               required
               aria-describedby="message-error"
-              class="form-input"
+              class="form-input resize-none"
             ></textarea>
             <span
               id="message-error"
@@ -155,7 +155,7 @@
           </div>
 
           <!-- CONSENT CHECKBOX -->
-          <div class="contact-form__group full-width">
+          <div class="contact-form__group full-width flex items-start gap-3">
             <label for="consent">
               <input
                 type="checkbox"
@@ -163,18 +163,24 @@
                 name="consent"
                 required
                 aria-describedby="consent-error"
+                class="mt-1 shrink-0 h-4 w-4 rounded border-grey-500 text-green-600 focus:ring-green-600 checked:bg-green-600 checked:border-green-600 transition-all duration-150 cursor-pointer"
               />
               I consent to being contacted by the team *
             </label>
             <span
               id="consent-error"
-              class="error-message"
+              class="error-message ml-auto"
               role="alert"
               aria-live="polite"
             ></span>
           </div>
 
-          <button type="submit">Submit</button>
+          <button
+            type="submit"
+            class="md:col-span-2 bg-green-600 text-white text-base font-bold py-3 rounded-lg transition-all duration-150 hover:bg-grey-900 focus:outline-none focus:ring-4 focus:ring-green-600/50"
+          >
+            Submit
+          </button>
         </form>
       </article>
 
