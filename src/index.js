@@ -12,10 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const emailError = document.getElementById("email-error");
 
-  const queryRadios = document.querySelectorAll(".query-radio");
+  const queryFieldset = document.querySelector(
+    'fieldset[aria-describedby="query-error"]'
+  );
   const queryError = document.getElementById("query-error");
 
-  const consentChecked = document.getElementById("consent");
+  const messageInput = document.getElementById("message");
+  const messageError = document.getElementById("message-error");
+
+  const consentCheckbox = document.getElementById("consent");
   const consentError = document.getElementById("consent-error");
 
   // Error object
@@ -45,20 +50,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   //   --- Helper Functions --- //
-  function setError(inputEl, errorEl, message) {
-    inputEl.classList.add("invalid");
+  function setError(element, errorEl, message) {
+    if (element.tagName === "FIELDSET") {
+      element.setAttribute("aria-invalid", "true");
+    } else {
+      element.classList.add("invalid");
+      element.setAttribute("aria-invalid", "true");
+    }
     errorEl.textContent = message;
+    errorEl.classList.add("active");
   }
 
-  function clearError(inputEl, errorEl) {
-    inputEl.classList.remove("invalid");
+  function clearError(element, errorEl) {
+    if (element.tagName === "FIELDSET") {
+      element.removeAttribute("aria-invalid");
+    } else {
+      element.classList.remove("invalid");
+      element.removeAttribute("aria-invalid");
+    }
     errorEl.textContent = "";
+    errorEl.classList.remove("active");
   }
 
-  function validateRequiredText(inputEl, errorEl) {
+  function validateRequiredText(inputEl, errorEl, errorMessage) {
     const value = inputEl.value.trim();
     if (value === "") {
-      setError(inputEl, errorEl, "This field is required");
+      setError(inputEl, errorEl, errorMessage);
       return false;
     }
     clearError(inputEl, errorEl);
@@ -68,18 +85,104 @@ document.addEventListener("DOMContentLoaded", () => {
   function validateEmail() {
     const email = emailInput.value.trim();
     if (email === "") {
-      setError(emailInput, emailError, "This field is required");
+      setError(emailInput, emailError, errorDict.email.empty);
       return false;
     }
     if (!emailRegex.test(email)) {
-      setError(emailInput, emailError, "Please enter a valid email address");
+      setError(emailInput, emailError, errorDict.email.invalid);
       return false;
     }
     clearError(emailInput, emailError);
     return true;
   }
 
-  function validateQueryRadio(){
-    
+  function validateQueryRadio() {
+    const queryTypeChecked = document.querySelector(
+      'input[name="query-type"]:checked'
+    );
+    if (!queryTypeChecked) {
+      setError(queryFieldset, queryError, errorDict.queryType.empty);
+      return false;
+    }
+    clearError(queryFieldset, queryError);
+    return true;
   }
+
+  function validateConsent() {
+    if (!consentCheckbox.checked) {
+      setError(consentCheckbox, consentError, errorDict.consent.empty);
+      return false;
+    }
+    clearError(consentCheckbox, consentError);
+    return true;
+  }
+
+  // Form submission handler
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Validate all fields
+    const isFirstNameValid = validateRequiredText(
+      firstNameInput,
+      firstNameError,
+      errorDict.firstName.empty
+    );
+    const isLastNameValid = validateRequiredText(
+      lastNameInput,
+      lastNameError,
+      errorDict.lastName.empty
+    );
+    const isEmailValid = validateEmail();
+    const isQueryValid = validateQueryRadio();
+    const isMessageValid = validateRequiredText(
+      messageInput,
+      messageError,
+      errorDict.message.empty
+    );
+    const isConsentValid = validateConsent();
+
+    // Check if all validations passed
+    if (
+      isFirstNameValid &&
+      isLastNameValid &&
+      isEmailValid &&
+      isQueryValid &&
+      isMessageValid &&
+      isConsentValid
+    ) {
+      console.log("Form is valid!");
+      // form.submit();
+    } else {
+      const firstInvalidField = form.querySelector('[aria-invalid="true"]');
+      if (firstInvalidField) {
+        if (firstInvalidField.tagName === "FIELDSET") {
+          firstInvalidField.querySelector("input").focus();
+        } else {
+          firstInvalidField.focus();
+        }
+      }
+    }
+  });
+
+  // Real-time validation on blur
+  firstNameInput.addEventListener("blur", () =>
+    validateRequiredText(
+      firstNameInput,
+      firstNameError,
+      errorDict.firstName.empty
+    )
+  );
+  lastNameInput.addEventListener("blur", () =>
+    validateRequiredText(lastNameInput, lastNameError, errorDict.lastName.empty)
+  );
+  emailInput.addEventListener("blur", validateEmail);
+  messageInput.addEventListener("blur", () =>
+    validateRequiredText(messageInput, messageError, errorDict.message.empty)
+  );
+  consentCheckbox.addEventListener("change", validateConsent);
+
+  // Validate radio buttons on change
+  document.querySelectorAll('input[name="query-type"]').forEach((radio) => {
+    radio.addEventListener("change", validateQueryRadio);
+  });
 });
