@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@theme {
+    /* Primary Colors */
+    --color-green-200: hsl(233, 100%, 90%);
+    --color-green-200-light: hsl(148, 38%, 91%);
+    --color-green-600: hsl(169, 82%, 27%);
+    --color-red: hsl(0, 66%, 54%);
+
+    /* Neutral Colors */
+    --color-white: hsl(0, 0%, 100%);
+    --color-grey-500: hsl(186, 15%, 59%);
+    --color-grey-900: hsl(187, 24%, 22%);
+
+    /* Font */
+    --font-karla: 'Karla', sans-serif
+}
