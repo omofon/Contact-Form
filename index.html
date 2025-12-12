@@ -35,7 +35,7 @@
           class="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-5"
         >
           <!-- FIRST NAME -->
-          <div class="contact-form__group flex flex-col gap-1.5">
+          <div class="contact-form__group">
             <label for="first-name"> First Name * </label>
             <input
               type="text"
@@ -44,6 +44,7 @@
               autocomplete="given-name"
               required
               aria-describedby="first-name-error"
+              class="form-input"
             />
             <span
               id="first-name-error"
@@ -63,6 +64,7 @@
               autocomplete="family-name"
               required
               aria-describedby="last-name-error"
+              class="form-input"
             />
             <span
               id="last-name-error"
@@ -82,6 +84,7 @@
               autocomplete="email"
               required
               aria-describedby="email-error"
+              class="form-input"
             />
             <span
               id="email-error"
@@ -93,32 +96,36 @@
 
           <!-- QUERY TYPE (RADIO GROUP WITH FIELDSET) -->
           <div class="contact-form__group full-width">
-            <fieldset aria-describedby="query-error">
-              <legend>Query Type *</legend>
+            <fieldset
+              aria-describedby="query-error"
+              class="flex flex-col gap-3"
+            >
+              <legend class="mb-1">Query Type *</legend>
+              <div class="flex flex-col gap-3 md:flex-row md:gap-4">
+                <label for="general-enquiry" class="query-option">
+                  <input
+                    type="radio"
+                    id="general-enquiry"
+                    class="query-radio"
+                    name="query-type"
+                    value="General Enquiry"
+                    required
+                  />
+                  General Enquiry
+                </label>
 
-              <label for="general-enquiry">
-                <input
-                  type="radio"
-                  id="general-enquiry"
-                  class="query-radio"
-                  name="query-type"
-                  value="General Enquiry"
-                  required
-                />
-                General Enquiry
-              </label>
-
-              <label for="support-request">
-                <input
-                  type="radio"
-                  id="support-request"
-                  class="query-radio"
-                  name="query-type"
-                  value="Support Request"
-                  required
-                />
-                Support Request
-              </label>
+                <label for="support-request" class="query-option">
+                  <input
+                    type="radio"
+                    id="support-request"
+                    class="query-radio"
+                    name="query-type"
+                    value="Support Request"
+                    required
+                  />
+                  Support Request
+                </label>
+              </div>
             </fieldset>
             <span
               id="query-error"
@@ -137,6 +144,7 @@
               rows="5"
               required
               aria-describedby="message-error"
+              class="form-input"
             ></textarea>
             <span
               id="message-error"
@@ -148,14 +156,14 @@
 
           <!-- CONSENT CHECKBOX -->
           <div class="contact-form__group full-width">
-            <input
-              type="checkbox"
-              id="consent"
-              name="consent"
-              required
-              aria-describedby="consent-error"
-            />
             <label for="consent">
+              <input
+                type="checkbox"
+                id="consent"
+                name="consent"
+                required
+                aria-describedby="consent-error"
+              />
               I consent to being contacted by the team *
             </label>
             <span
