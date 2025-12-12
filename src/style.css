@@ -16,3 +16,53 @@
 .required {
   color: #d32f2f;
 }
+
+/* ----- SUCCESS POPUP STYLES ----- */
+
+.success-popup {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background-color: #0d3b2e; /* dark green */
+  color: white;
+  padding: 1.25rem 1.75rem;
+  border-radius: 10px;
+  width: fit-content;
+  max-width: 90%;
+  text-align: left;
+  opacity: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  /* animations */
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.success-popup.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.success-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  gap: 0.5rem;
+}
+
+.success-icon {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.success-subtext {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}

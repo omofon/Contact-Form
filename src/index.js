@@ -1,8 +1,14 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 document.addEventListener("DOMContentLoaded", () => {
-  //   Form Selector
+  // ----- ELEMENT SELECTORS -----
   const form = document.getElementById("contact-form");
 
-  // Selectors for input fields and error spans
   const firstNameInput = document.getElementById("first-name");
   const firstNameError = document.getElementById("first-name-error");
 
@@ -23,33 +29,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const consentCheckbox = document.getElementById("consent");
   const consentError = document.getElementById("consent-error");
 
-  // Error object
+  const submitButton = form.querySelector("button[type='submit']");
+  const successPopup = document.getElementById("success-popup");
+
+  // ----- ERROR MESSAGES -----
   const errorDict = {
-    firstName: {
-      empty: "This field is required",
-    },
-    lastName: {
-      empty: "This field is required",
-    },
+    firstName: { empty: "This field is required" },
+    lastName: { empty: "This field is required" },
     email: {
       empty: "This field is required",
       invalid: "Please enter a valid email address",
     },
-    queryType: {
-      empty: "Please select a query type",
-    },
-    message: {
-      empty: "This field is required",
-    },
+    queryType: { empty: "Please select a query type" },
+    message: { empty: "This field is required" },
     consent: {
       empty: "To submit this form, please consent to being contacted",
     },
   };
 
-  //   Email Regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  //   --- Helper Functions --- //
+  // ----- ACCESSIBLE ERROR HELPERS -----
   function setError(element, errorEl, message) {
     if (element.tagName === "FIELDSET") {
       element.setAttribute("aria-invalid", "true");
@@ -72,10 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
     errorEl.classList.remove("active");
   }
 
-  function validateRequiredText(inputEl, errorEl, errorMessage) {
+  // ----- VALIDATION -----
+  function validateRequiredText(inputEl, errorEl, msg) {
     const value = inputEl.value.trim();
     if (value === "") {
-      setError(inputEl, errorEl, errorMessage);
+      setError(inputEl, errorEl, msg);
       return false;
     }
     clearError(inputEl, errorEl);
@@ -97,10 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function validateQueryRadio() {
-    const queryTypeChecked = document.querySelector(
-      'input[name="query-type"]:checked'
-    );
-    if (!queryTypeChecked) {
+    const checked = document.querySelector('input[name="query-type"]:checked');
+    if (!checked) {
       setError(queryFieldset, queryError, errorDict.queryType.empty);
       return false;
     }
@@ -117,54 +116,109 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-  // Form submission handler
-  form.addEventListener("submit", (e) => {
+  // -----------------------------------------------------------------
+  // 🔔 SUCCESS POPUP
+  // -----------------------------------------------------------------
+  function showSuccessPopup() {
+    successPopup.classList.remove("hidden");
+    successPopup.classList.add("show");
+    successPopup.focus();
+
+    setTimeout(() => {
+      successPopup.classList.remove("show");
+      setTimeout(() => successPopup.classList.add("hidden"), 300);
+    }, 4000);
+  }
+
+  // -----------------------------------------------------------------
+  // ⏳ BUTTON LOADING STATE
+  // -----------------------------------------------------------------
+  function startLoading() {
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+  }
+
+  function stopLoading() {
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit";
+  }
+
+  // -----------------------------------------------------------------
+  // 📤 SUBMIT HANDLER WITH SUPABASE
+  // -----------------------------------------------------------------
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Validate all fields
-    const isFirstNameValid = validateRequiredText(
-      firstNameInput,
-      firstNameError,
-      errorDict.firstName.empty
-    );
-    const isLastNameValid = validateRequiredText(
-      lastNameInput,
-      lastNameError,
-      errorDict.lastName.empty
-    );
-    const isEmailValid = validateEmail();
-    const isQueryValid = validateQueryRadio();
-    const isMessageValid = validateRequiredText(
-      messageInput,
-      messageError,
-      errorDict.message.empty
-    );
-    const isConsentValid = validateConsent();
+    // Validate form
+    const isValid =
+      validateRequiredText(
+        firstNameInput,
+        firstNameError,
+        errorDict.firstName.empty
+      ) &&
+      validateRequiredText(
+        lastNameInput,
+        lastNameError,
+        errorDict.lastName.empty
+      ) &&
+      validateEmail() &&
+      validateQueryRadio() &&
+      validateRequiredText(
+        messageInput,
+        messageError,
+        errorDict.message.empty
+      ) &&
+      validateConsent();
 
-    // Check if all validations passed
-    if (
-      isFirstNameValid &&
-      isLastNameValid &&
-      isEmailValid &&
-      isQueryValid &&
-      isMessageValid &&
-      isConsentValid
-    ) {
-      console.log("Form is valid!");
-      // form.submit();
-    } else {
-      const firstInvalidField = form.querySelector('[aria-invalid="true"]');
-      if (firstInvalidField) {
-        if (firstInvalidField.tagName === "FIELDSET") {
-          firstInvalidField.querySelector("input").focus();
+    if (!isValid) {
+      const firstInvalid = form.querySelector('[aria-invalid="true"]');
+      if (firstInvalid) {
+        if (firstInvalid.tagName === "FIELDSET") {
+          firstInvalid.querySelector("input").focus();
         } else {
-          firstInvalidField.focus();
+          firstInvalid.focus();
         }
       }
+      return;
     }
+
+    // ------------------------------
+    // Start loading
+    // ------------------------------
+    startLoading();
+
+    // Build data object
+    const formData = {
+      first_name: firstNameInput.value.trim(),
+      last_name: lastNameInput.value.trim(),
+      email: emailInput.value.trim(),
+      query_type: document.querySelector('input[name="query-type"]:checked')
+        .value,
+      message: messageInput.value.trim(),
+      consent: consentCheckbox.checked,
+    };
+
+    // Send to Supabase
+    const { error } = await supabase
+      .from("contact_messages")
+      .insert([formData]);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      stopLoading();
+      alert("Something went wrong. Try again.");
+      return;
+    }
+
+    // ------------------------------
+    // Success
+    // ------------------------------
+    stopLoading();
+    form.reset();
+    showSuccessPopup();
   });
 
-  // Real-time validation on blur
+  // ----- REAL-TIME VALIDATION -----
   firstNameInput.addEventListener("blur", () =>
     validateRequiredText(
       firstNameInput,
@@ -172,17 +226,20 @@ document.addEventListener("DOMContentLoaded", () => {
       errorDict.firstName.empty
     )
   );
+
   lastNameInput.addEventListener("blur", () =>
     validateRequiredText(lastNameInput, lastNameError, errorDict.lastName.empty)
   );
+
   emailInput.addEventListener("blur", validateEmail);
+
   messageInput.addEventListener("blur", () =>
     validateRequiredText(messageInput, messageError, errorDict.message.empty)
   );
+
   consentCheckbox.addEventListener("change", validateConsent);
 
-  // Validate radio buttons on change
-  document.querySelectorAll('input[name="query-type"]').forEach((radio) => {
-    radio.addEventListener("change", validateQueryRadio);
-  });
+  document
+    .querySelectorAll('input[name="query-type"]')
+    .forEach((radio) => radio.addEventListener("change", validateQueryRadio));
 });
