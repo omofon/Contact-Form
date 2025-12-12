@@ -20,16 +20,23 @@
 
     <link rel="stylesheet" href="./src/output.css" />
   </head>
-  <body>
-    <main>
-      <article class="contact">
-        <h1>Contact Us</h1>
-        <form action="" id="contact-form" novalidate>
+  <body
+    class="bg-green-200-light text-grey-900 min-h-screen flex flex-col items-center justify-center p-4"
+  >
+    <main
+      class="max-w-[736px] w-full mt-10 mb-10 md:mt-16 md:mb-16 lg:mt-0 lg:mb-0"
+    >
+      <article class="contact bg-white rounded-xl shadow-2xl p-6 md:p-10">
+        <h1 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Contact Us</h1>
+        <form
+          action=""
+          id="contact-form"
+          novalidate
+          class="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-5"
+        >
           <!-- FIRST NAME -->
-          <div class="contact-form__group">
-            <label for="first-name">
-              First Name <span class="required">*</span>
-            </label>
+          <div class="contact-form__group flex flex-col gap-1.5">
+            <label for="first-name"> First Name * </label>
             <input
               type="text"
               id="first-name"
@@ -48,9 +55,7 @@
 
           <!-- LAST NAME -->
           <div class="contact-form__group">
-            <label for="last-name">
-              Last Name <span class="required">*</span>
-            </label>
+            <label for="last-name"> Last Name * </label>
             <input
               type="text"
               id="last-name"
@@ -69,9 +74,7 @@
 
           <!-- EMAIL -->
           <div class="contact-form__group full-width">
-            <label for="email">
-              Email Address <span class="required">*</span>
-            </label>
+            <label for="email"> Email Address * </label>
             <input
               type="email"
               id="email"
@@ -91,7 +94,7 @@
           <!-- QUERY TYPE (RADIO GROUP WITH FIELDSET) -->
           <div class="contact-form__group full-width">
             <fieldset aria-describedby="query-error">
-              <legend>Query Type <span class="required">*</span></legend>
+              <legend>Query Type *</legend>
 
               <label for="general-enquiry">
                 <input
@@ -127,9 +130,7 @@
 
           <!-- MESSAGE -->
           <div class="contact-form__group full-width">
-            <label for="message">
-              Message <span class="required">*</span>
-            </label>
+            <label for="message"> Message * </label>
             <textarea
               id="message"
               name="message"
@@ -155,8 +156,7 @@
               aria-describedby="consent-error"
             />
             <label for="consent">
-              I consent to being contacted by the team
-              <span class="required">*</span>
+              I consent to being contacted by the team *
             </label>
             <span
               id="consent-error"
