@@ -204,17 +204,35 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // 4. Send to Supabase
-    const { data, error } = await supabase
+    const { error: insertError } = await supabase
       .from("contact_messages")
       .insert([formData]);
 
-    if (error) {
-      console.error("Supabase error:", error);
+    if (insertError) {
+      console.error("Supabase insert error:", insertError);
       stopLoading();
       alert("Something went wrong. Try again.");
       return;
-    } else {
-      console.log("Inserted row:", data);
+    }
+
+    const emailRes = await fetch(
+      "https://vrsgkbqqrglcrsavuvme.supabase.co/functions/v1/send-contact-confirmation",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+        }),
+      }
+    );
+
+    if (!emailRes.ok) {
+      const err = await emailRes.text();
+      console.error("Email function failed:", err);
     }
 
     // 5. Success
