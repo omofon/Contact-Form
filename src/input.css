@@ -94,10 +94,6 @@
     pointer-events: auto;
   }
 
-  .success-popup.hidden {
-    @apply -translate-y-4 opacity-0;
-  }
-
   .success-title {
     @apply flex items-center font-bold text-base gap-2;
   }

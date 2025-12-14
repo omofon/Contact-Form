@@ -1,11 +1,15 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
+// =================================================================
+// 1. SUPABASE CLIENT INITIALIZATION (using global 'supabase' from CDN)
+// =================================================================
 const supabaseUrl = "https://hknttckvivloiebbeees.supabase.co";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrbnR0Y2t2aXZsb2llYmJlZWVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NT";
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+// =================================================================
+// 2. FORM VALIDATION AND SUBMISSION LOGIC
+// =================================================================
 document.addEventListener("DOMContentLoaded", () => {
   // ----- ELEMENT SELECTORS -----
   const form = document.getElementById("contact-form");
@@ -73,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     errorEl.classList.remove("active");
   }
 
-  // ----- VALIDATION -----
+  // ----- VALIDATION FUNCTIONS -----
   function validateRequiredText(inputEl, errorEl, msg) {
     const value = inputEl.value.trim();
     if (value === "") {
@@ -118,22 +122,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------------------------------------------
-  // 🔔 SUCCESS POPUP
+  // 🔔 SUCCESS POPUP & LOADING STATE
   // -----------------------------------------------------------------
   function showSuccessPopup() {
     successPopup.classList.remove("hidden");
     successPopup.classList.add("show");
+    successPopup.setAttribute("tabindex", "-1");
     successPopup.focus();
 
     setTimeout(() => {
       successPopup.classList.remove("show");
       setTimeout(() => successPopup.classList.add("hidden"), 300);
+      successPopup.removeAttribute("tabindex");
     }, 4000);
   }
 
-  // -----------------------------------------------------------------
-  // ⏳ BUTTON LOADING STATE
-  // -----------------------------------------------------------------
   function startLoading() {
     submitButton.disabled = true;
     submitButton.textContent = "Sending...";
@@ -145,35 +148,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------------------------------------------
-  // 📤 SUBMIT HANDLER WITH SUPABASE
+  // 📤 SUBMIT HANDLER WITH SUPABASE INSERT
   // -----------------------------------------------------------------
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Validate form
+    // 1. Run all validations and check if any failed
     const isValid =
       validateRequiredText(
         firstNameInput,
         firstNameError,
         errorDict.firstName.empty
-      ) &&
+      ) &
       validateRequiredText(
         lastNameInput,
         lastNameError,
         errorDict.lastName.empty
-      ) &&
-      validateEmail() &&
-      validateQueryRadio() &&
+      ) &
+      validateEmail() &
+      validateQueryRadio() &
       validateRequiredText(
         messageInput,
         messageError,
         errorDict.message.empty
-      ) &&
+      ) &
       validateConsent();
 
     if (!isValid) {
+      // Find and focus the first invalid element
       const firstInvalid = form.querySelector('[aria-invalid="true"]');
       if (firstInvalid) {
+        // Handle fieldset (radio buttons)
         if (firstInvalid.tagName === "FIELDSET") {
           firstInvalid.querySelector("input").focus();
         } else {
@@ -183,12 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ------------------------------
-    // Start loading
-    // ------------------------------
+    // 2. Validation passed - Start loading state
     startLoading();
 
-    // Build data object
+    // 3. Build data object
     const formData = {
       first_name: firstNameInput.value.trim(),
       last_name: lastNameInput.value.trim(),
@@ -199,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       consent: consentCheckbox.checked,
     };
 
-    // Send to Supabase
+    // 4. Send to Supabase
     const { error } = await supabase
       .from("contact_messages")
       .insert([formData]);
@@ -211,15 +214,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ------------------------------
-    // Success
-    // ------------------------------
+    // 5. Success
     stopLoading();
     form.reset();
     showSuccessPopup();
   });
 
-  // ----- REAL-TIME VALIDATION -----
+  // -----------------------------------------------------------------
+  // 3. REAL-TIME/BLUR VALIDATION (Uncommented)
+  // -----------------------------------------------------------------
   firstNameInput.addEventListener("blur", () =>
     validateRequiredText(
       firstNameInput,
