@@ -1,11 +1,12 @@
 // =================================================================
 // 1. SUPABASE CLIENT INITIALIZATION (using global 'supabase' from CDN)
 // =================================================================
-const supabaseUrl = "https://hknttckvivloiebbeees.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrbnR0Y2t2aXZsb2llYmJlZWVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NT";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  "https://vrsgkbqqrglcrsavuvme.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyc2drYnFxcmdsY3JzYXZ1dm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3MDc4NTMsImV4cCI6MjA4MTI4Mzg1M30.sIqGOnwF-73vFMW-CtC_IlvClSN4tAs8f8KV0NKqah4"
+);
 
 // =================================================================
 // 2. FORM VALIDATION AND SUBMISSION LOGIC
@@ -159,19 +160,19 @@ document.addEventListener("DOMContentLoaded", () => {
         firstNameInput,
         firstNameError,
         errorDict.firstName.empty
-      ) &
+      ) &&
       validateRequiredText(
         lastNameInput,
         lastNameError,
         errorDict.lastName.empty
-      ) &
-      validateEmail() &
-      validateQueryRadio() &
+      ) &&
+      validateEmail() &&
+      validateQueryRadio() &&
       validateRequiredText(
         messageInput,
         messageError,
         errorDict.message.empty
-      ) &
+      ) &&
       validateConsent();
 
     if (!isValid) {
@@ -203,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // 4. Send to Supabase
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("contact_messages")
       .insert([formData]);
 
@@ -212,6 +213,8 @@ document.addEventListener("DOMContentLoaded", () => {
       stopLoading();
       alert("Something went wrong. Try again.");
       return;
+    } else {
+      console.log("Inserted row:", data);
     }
 
     // 5. Success

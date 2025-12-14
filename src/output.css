@@ -7,7 +7,6 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-green-200: hsl(233, 100%, 90%);
     --color-green-600: hsl(169, 82%, 27%);
     --color-white: hsl(0, 0%, 100%);
     --spacing: 0.25rem;
@@ -608,12 +607,6 @@
       @media (hover: hover) {
         border-color: var(--color-green-600);
       }
-    }
-    &:has(*:is(:checked)) {
-      border-color: var(--color-green-600);
-    }
-    &:has(*:is(:checked)) {
-      background-color: var(--color-green-200);
     }
   }
   .query-radio {

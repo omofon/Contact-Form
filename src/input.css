@@ -72,7 +72,7 @@
     @apply flex items-center gap-4 border border-solid rounded-md px-4 py-3 text-base cursor-pointer w-full;
     @apply border-grey-500 text-grey-900 transition-all duration-150;
     @apply hover:border-green-600 focus-within:border-green-600;
-    @apply has-[:checked]:bg-green-200 has-[:checked]:border-green-600;
+    /* @apply has-[:checked]:bg-green-200 has-[:checked]:border-green-600; */
   }
 
   .query-radio {
